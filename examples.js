@@ -1,3 +1,6 @@
-// import intempo from 'intempo';
+import intempo from 'intempo';
 
-console.log('Hello from intempo');
+const arraybuffer = null;
+
+const player = intempo.createAudioPlayer(arraybuffer);
+player.play();
