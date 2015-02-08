@@ -1,15 +1,20 @@
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 function createPlayer(audioContext, buffer) {
+
+  let sound;
+
   function play() {
-    const sound = audioContext.createBufferSource(); // Declare a New Sound
+    sound = audioContext.createBufferSource(); // Declare a New Sound
     sound.buffer = buffer;                           // Attatch our Audio Data as it's Buffer
     sound.connect(audioContext.destination);         // Link the Sound to the Output
     sound.start(audioContext.currentTime, 0);        // Play the Sound Immediately
   }
 
   function stop() {
-    // body...
+    if (sound) {
+      sound.stop();
+    }
   }
 
   function pause() {

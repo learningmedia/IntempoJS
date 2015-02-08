@@ -1,8 +1,17 @@
 import intempo from 'intempo';
 
+let intempoPlayer;
+
 loadArrayBuffer('audio/example.mp3')
   .then(arraybuffer => intempo.loadPlayer(arraybuffer))
-  .then(player => player.play());
+  .then(player => {
+    intempoPlayer = player;
+    player.play();
+  });
+
+document
+  .getElementById('stopButton')
+  .addEventListener('click', intempoPlayer.stop);
 
 function loadArrayBuffer(url) {
   return new Promise(resolve => {
