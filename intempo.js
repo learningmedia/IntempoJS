@@ -5,7 +5,7 @@ function createAudioPlayer(arraybuffer) {
   }
 
   function play() {
-    // body...
+    console.log('Playing...');
   }
 
   function stop() {
