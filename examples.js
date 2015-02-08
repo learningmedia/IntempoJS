@@ -1,9 +1,8 @@
 import intempo from 'intempo';
 
-loadArrayBuffer('audio/example.mp3').then(arraybuffer => {
-  const player = intempo.createAudioPlayer(arraybuffer);
-  player.play();
-});
+loadArrayBuffer('audio/example.mp3')
+  .then(arraybuffer => intempo.loadPlayer(arraybuffer))
+  .then(player => player.play());
 
 function loadArrayBuffer(url) {
   return new Promise(resolve => {
