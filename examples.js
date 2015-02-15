@@ -1,9 +1,13 @@
 import intempo from 'intempo';
 
 let intempoPlayer;
+let startButton = document.getElementById('startButton');
+let stopButton = document.getElementById('stopButton');
+let pauseButton = document.getElementById('pauseButton');
+let positionLabel = document.getElementById('positionLabel');
 
 loadArrayBuffer('audio/example.mp3')
-  .then(arraybuffer => intempo.loadPlayer(arraybuffer, null, onStateChange))
+  .then(arraybuffer => intempo.loadPlayer(arraybuffer, null, onStateChange, onPositionChange))
   .then(player => {
     intempoPlayer = player;
     initializeUI();
@@ -23,6 +27,10 @@ function pause() {
 
 function onStateChange(newState) {
   log(translateStateText(newState));
+}
+
+function onPositionChange(newPosition) {
+  positionLabel.textContent = `${ newPosition / 1000 } / ${ intempoPlayer.duration / 1000 }`;
 }
 
 function log(text) {
@@ -59,11 +67,6 @@ function loadArrayBuffer(url) {
 }
 
 function initializeUI() {
-  let startButton = document.getElementById('startButton');
-  let stopButton = document.getElementById('stopButton');
-  let pauseButton = document.getElementById('pauseButton');
-  let positionLabel = document.getElementById('positionLabel');
-
   startButton.addEventListener('click', play);
   startButton.removeAttribute('disabled');
 
@@ -72,8 +75,4 @@ function initializeUI() {
 
   pauseButton.addEventListener('click', pause);
   pauseButton.removeAttribute('disabled');
-
-  window.setInterval(function () {
-    positionLabel.textContent = `${ intempoPlayer.currentPosition / 1000 } / ${ intempoPlayer.duration / 1000 }`;
-  }, 25);
 }
