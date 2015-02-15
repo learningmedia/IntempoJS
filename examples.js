@@ -6,7 +6,7 @@ loadArrayBuffer('audio/example.mp3')
   .then(arraybuffer => intempo.loadPlayer(arraybuffer, null, onStateChange))
   .then(player => {
     intempoPlayer = player;
-    initializeButtons();
+    initializeUI();
   });
 
 function play() {
@@ -58,10 +58,11 @@ function loadArrayBuffer(url) {
   });
 }
 
-function initializeButtons() {
+function initializeUI() {
   let startButton = document.getElementById('startButton');
   let stopButton = document.getElementById('stopButton');
   let pauseButton = document.getElementById('pauseButton');
+  let positionLabel = document.getElementById('positionLabel');
 
   startButton.addEventListener('click', play);
   startButton.removeAttribute('disabled');
@@ -71,4 +72,8 @@ function initializeButtons() {
 
   pauseButton.addEventListener('click', pause);
   pauseButton.removeAttribute('disabled');
+
+  window.setInterval(function () {
+    positionLabel.textContent = `${ intempoPlayer.currentPosition / 1000 } / ${ intempoPlayer.duration / 1000 }`;
+  }, 25);
 }

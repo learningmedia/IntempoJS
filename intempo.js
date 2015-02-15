@@ -10,16 +10,40 @@ function createPlayer(audioContext, buffer, stateChangedCallback) {
   let state;
   let pausedAt;
   let startedAt;
+  let duration;
 
   state = STATE_STOPPED;
+  duration = buffer.duration * 1000;
+
+  function getCurrentPosition() {
+    if (state === STATE_PAUSING) {
+      return pausedAt;
+    } else if (state === STATE_PLAYING) {
+      return Date.now() - startedAt;
+    } else {
+      return 0;
+    }
+  }
+
+  function onCurrentSoundEnded() {
+    if (state !== STATE_STOPPED && getCurrentPosition() >= duration) {
+      changeState(STATE_STOPPED);
+      pausedAt = undefined;
+    }
+  }
 
   function play() {
     if (state === STATE_PLAYING) {
       return;
     }
 
+    if (sound) {
+      sound.onended = undefined;
+    }
+
     sound = audioContext.createBufferSource();
     sound.buffer = buffer;
+    sound.onended = onCurrentSoundEnded;
     sound.connect(audioContext.destination);
 
     if (pausedAt) {
@@ -60,9 +84,15 @@ function createPlayer(audioContext, buffer, stateChangedCallback) {
   }
 
   return {
-    play: play,
-    stop: stop,
-    pause: pause
+    play,
+    stop,
+    pause,
+    get duration() {
+      return duration;
+    },
+    get currentPosition() {
+      return getCurrentPosition();
+    }
   };
 }
 
