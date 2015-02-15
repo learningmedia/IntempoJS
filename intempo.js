@@ -4,7 +4,7 @@ const STATE_STOPPED = 0;
 const STATE_PLAYING = 1;
 const STATE_PAUSING = 2;
 
-function createPlayer(audioContext, buffer, stateChangedCallback, positionChangedCallback) {
+function createPlayer(audioContext, buffer, stateChangedCallback, positionChangedCallback, clockInterval) {
 
   let sound;
   let state;
@@ -13,8 +13,8 @@ function createPlayer(audioContext, buffer, stateChangedCallback, positionChange
   let lastPosition;
   let duration;
   let intervalId;
-  const interval = 20;
 
+  clockInterval = clockInterval || 20;
   state = STATE_STOPPED;
   lastPosition = 0;
   duration = buffer.duration * 1000;
@@ -67,7 +67,7 @@ function createPlayer(audioContext, buffer, stateChangedCallback, positionChange
 
   function changeState(newState) {
     if (newState === STATE_PLAYING) {
-      intervalId = window.setInterval(onCurrentPositionChanged, interval);
+      intervalId = window.setInterval(onCurrentPositionChanged, clockInterval);
     } else {
       window.clearInterval(intervalId);
     }
@@ -121,7 +121,7 @@ function createPlayer(audioContext, buffer, stateChangedCallback, positionChange
   };
 }
 
-function loadPlayer(arraybuffer, audioContext, stateChangedCallback, positionChangedCallback) {
+function loadPlayer(arraybuffer, audioContext, stateChangedCallback, positionChangedCallback, clockInterval) {
   return new Promise((resolve, reject) => {
 
     if (!(arraybuffer instanceof ArrayBuffer)) {
@@ -132,7 +132,7 @@ function loadPlayer(arraybuffer, audioContext, stateChangedCallback, positionCha
 
     audioContext.decodeAudioData(
       arraybuffer,
-      buffer => resolve(createPlayer(audioContext, buffer, stateChangedCallback, positionChangedCallback)),
+      buffer => resolve(createPlayer(audioContext, buffer, stateChangedCallback, positionChangedCallback, clockInterval)),
       error => reject(error)
     );
   });

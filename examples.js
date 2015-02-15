@@ -7,7 +7,7 @@ let pauseButton = document.getElementById('pauseButton');
 let positionLabel = document.getElementById('positionLabel');
 
 loadArrayBuffer('audio/example.mp3')
-  .then(arraybuffer => intempo.loadPlayer(arraybuffer, null, onStateChange, onPositionChange))
+  .then(arraybuffer => intempo.loadPlayer(arraybuffer, null, onStateChange, onPositionChange, 20))
   .then(player => {
     intempoPlayer = player;
     initializeUI();
