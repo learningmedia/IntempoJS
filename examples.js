@@ -3,7 +3,7 @@ import intempo from 'intempo';
 let intempoPlayer;
 
 loadArrayBuffer('audio/example.mp3')
-  .then(arraybuffer => intempo.loadPlayer(arraybuffer))
+  .then(arraybuffer => intempo.loadPlayer(arraybuffer, null, onStateChange))
   .then(player => {
     intempoPlayer = player;
     initializeButtons();
@@ -19,6 +19,29 @@ function stop() {
 
 function pause() {
   intempoPlayer.pause();
+}
+
+function onStateChange(newState) {
+  log(translateStateText(newState));
+}
+
+function log(text) {
+  let logDiv = document.getElementById('log');
+  let paragraph = document.createElement('p');
+  paragraph.textContent = `${ new Date().toISOString() } - ${ text }`;
+  logDiv.appendChild(paragraph);
+}
+
+function translateStateText(newState) {
+  if (newState === intempo.STATE_STOPPED) {
+    return 'Audioplayer stopped.';
+  } else if (newState === intempo.STATE_PLAYING) {
+    return 'Audioplayer started.';
+  } else if (newState === intempo.STATE_PAUSING) {
+    return 'Audioplayer paused.';
+  } else {
+    return 'Invalid state.';
+  }
 }
 
 function loadArrayBuffer(url) {

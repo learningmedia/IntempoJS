@@ -4,7 +4,7 @@ const STATE_STOPPED = 0;
 const STATE_PLAYING = 1;
 const STATE_PAUSING = 2;
 
-function createPlayer(audioContext, buffer) {
+function createPlayer(audioContext, buffer, stateChangedCallback) {
 
   let sound;
   let state;
@@ -30,17 +30,16 @@ function createPlayer(audioContext, buffer) {
       sound.start(audioContext.currentTime, 0);
     }
 
-    state = STATE_PLAYING;
+    changeState(STATE_PLAYING);
     pausedAt = undefined;
   }
 
   function stop() {
-    if (state === STATE_PLAYING) {
+    if (state !== STATE_STOPPED) {
       sound.stop();
+      changeState(STATE_STOPPED);
+      pausedAt = undefined;
     }
-
-    state = STATE_STOPPED;
-    pausedAt = undefined;
   }
 
   function pause() {
@@ -50,7 +49,14 @@ function createPlayer(audioContext, buffer) {
 
     sound.stop();
     pausedAt = Date.now() - startedAt;
-    state = STATE_PAUSING;
+    changeState(STATE_PAUSING);
+  }
+
+  function changeState(newState) {
+    state = newState;
+    if (stateChangedCallback) {
+      stateChangedCallback(newState);
+    }
   }
 
   return {
@@ -60,7 +66,7 @@ function createPlayer(audioContext, buffer) {
   };
 }
 
-function loadPlayer(arraybuffer, audioContext) {
+function loadPlayer(arraybuffer, audioContext, stateChangedCallback) {
   return new Promise((resolve, reject) => {
 
     if (!(arraybuffer instanceof ArrayBuffer)) {
@@ -71,12 +77,15 @@ function loadPlayer(arraybuffer, audioContext) {
 
     audioContext.decodeAudioData(
       arraybuffer,
-      buffer => resolve(createPlayer(audioContext, buffer)),
+      buffer => resolve(createPlayer(audioContext, buffer, stateChangedCallback)),
       error => reject(error)
     );
   });
 }
 
 export default {
-  loadPlayer: loadPlayer
+  loadPlayer,
+  STATE_STOPPED,
+  STATE_PLAYING,
+  STATE_PAUSING
 };
