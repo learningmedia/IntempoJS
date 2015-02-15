@@ -1,13 +1,25 @@
 import intempo from 'intempo';
 
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioContext = new AudioContext();
+
 let intempoPlayer;
 let startButton = document.getElementById('startButton');
 let stopButton = document.getElementById('stopButton');
 let pauseButton = document.getElementById('pauseButton');
+let slider = document.getElementById('slider');
 let positionLabel = document.getElementById('positionLabel');
 
 loadArrayBuffer('audio/example.mp3')
-  .then(arraybuffer => intempo.loadPlayer(arraybuffer, null, onStateChange, onPositionChange, 20))
+  .then(arraybuffer => {
+    return intempo.loadPlayer({
+      arraybuffer: arraybuffer,
+      audioContext: audioContext,
+      stateChangedCallback: onStateChange,
+      positionChangedCallback: onPositionChange,
+      clockInterval: 20
+    });
+  })
   .then(player => {
     intempoPlayer = player;
     initializeUI();
@@ -30,6 +42,7 @@ function onStateChange(newState) {
 }
 
 function onPositionChange(newPosition) {
+  slider.value = newPosition;
   positionLabel.textContent = `${ newPosition / 1000 } / ${ intempoPlayer.duration / 1000 }`;
 }
 
@@ -75,4 +88,9 @@ function initializeUI() {
 
   pauseButton.addEventListener('click', pause);
   pauseButton.removeAttribute('disabled');
+
+  slider.min = 0;
+  slider.max = intempoPlayer.duration;
+  slider.value = 0;
+  slider.removeAttribute('disabled');
 }

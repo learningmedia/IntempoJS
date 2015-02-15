@@ -4,7 +4,9 @@ const STATE_STOPPED = 0;
 const STATE_PLAYING = 1;
 const STATE_PAUSING = 2;
 
-function createPlayer(audioContext, buffer, stateChangedCallback, positionChangedCallback, clockInterval) {
+function noop() {}
+
+function createPlayer(options, buffer) {
 
   let sound;
   let state;
@@ -14,7 +16,6 @@ function createPlayer(audioContext, buffer, stateChangedCallback, positionChange
   let duration;
   let intervalId;
 
-  clockInterval = clockInterval || 20;
   state = STATE_STOPPED;
   lastPosition = 0;
   duration = buffer.duration * 1000;
@@ -28,17 +29,17 @@ function createPlayer(audioContext, buffer, stateChangedCallback, positionChange
       sound.onended = undefined;
     }
 
-    sound = audioContext.createBufferSource();
+    sound = options.audioContext.createBufferSource();
     sound.buffer = buffer;
     sound.onended = onCurrentSoundEnded;
-    sound.connect(audioContext.destination);
+    sound.connect(options.audioContext.destination);
 
     if (pausedAt) {
       startedAt = Date.now() - pausedAt;
-      sound.start(audioContext.currentTime, pausedAt / 1000);
+      sound.start(options.audioContext.currentTime, pausedAt / 1000);
     } else {
       startedAt = Date.now();
-      sound.start(audioContext.currentTime, 0);
+      sound.start(options.audioContext.currentTime, 0);
     }
 
     changeState(STATE_PLAYING);
@@ -67,15 +68,13 @@ function createPlayer(audioContext, buffer, stateChangedCallback, positionChange
 
   function changeState(newState) {
     if (newState === STATE_PLAYING) {
-      intervalId = window.setInterval(onCurrentPositionChanged, clockInterval);
+      intervalId = window.setInterval(onCurrentPositionChanged, options.clockInterval);
     } else {
       window.clearInterval(intervalId);
     }
 
     state = newState;
-    if (stateChangedCallback) {
-      stateChangedCallback(newState);
-    }
+    options.stateChangedCallback(newState);
   }
 
   function calculateCurrentPosition() {
@@ -92,9 +91,7 @@ function createPlayer(audioContext, buffer, stateChangedCallback, positionChange
     const currentPosition = calculateCurrentPosition();
     if (currentPosition !== lastPosition) {
       lastPosition = currentPosition;
-      if (positionChangedCallback) {
-        positionChangedCallback(currentPosition);
-      }
+      options.positionChangedCallback(currentPosition);
     }
   }
 
@@ -121,18 +118,22 @@ function createPlayer(audioContext, buffer, stateChangedCallback, positionChange
   };
 }
 
-function loadPlayer(arraybuffer, audioContext, stateChangedCallback, positionChangedCallback, clockInterval) {
+function loadPlayer(options) {
   return new Promise((resolve, reject) => {
 
-    if (!(arraybuffer instanceof ArrayBuffer)) {
+    if (!(options.arraybuffer instanceof ArrayBuffer)) {
       reject(new Error('arraybuffer is not an object.'));
     }
 
-    audioContext = audioContext || new AudioContext();
+    // Set default options:
+    options.audioContext = options.audioContext || new AudioContext();
+    options.stateChangedCallback = options.stateChangedCallback || noop;
+    options.positionChangedCallback = options.positionChangedCallback || noop;
+    options.clockInterval = options.clockInterval || 20;
 
-    audioContext.decodeAudioData(
-      arraybuffer,
-      buffer => resolve(createPlayer(audioContext, buffer, stateChangedCallback, positionChangedCallback, clockInterval)),
+    options.audioContext.decodeAudioData(
+      options.arraybuffer,
+      buffer => resolve(createPlayer(options, buffer)),
       error => reject(error)
     );
   });
