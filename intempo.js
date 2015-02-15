@@ -1,24 +1,56 @@
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
+const STATE_STOPPED = 0;
+const STATE_PLAYING = 1;
+const STATE_PAUSING = 2;
+
 function createPlayer(audioContext, buffer) {
 
   let sound;
+  let state;
+  let pausedAt;
+  let startedAt;
+
+  state = STATE_STOPPED;
 
   function play() {
-    sound = audioContext.createBufferSource(); // Declare a New Sound
-    sound.buffer = buffer;                           // Attatch our Audio Data as it's Buffer
-    sound.connect(audioContext.destination);         // Link the Sound to the Output
-    sound.start(audioContext.currentTime, 0);        // Play the Sound Immediately
+    if (state === STATE_PLAYING) {
+      return;
+    }
+
+    sound = audioContext.createBufferSource();
+    sound.buffer = buffer;
+    sound.connect(audioContext.destination);
+
+    if (pausedAt) {
+      startedAt = Date.now() - pausedAt;
+      sound.start(audioContext.currentTime, pausedAt / 1000);
+    } else {
+      startedAt = Date.now();
+      sound.start(audioContext.currentTime, 0);
+    }
+
+    state = STATE_PLAYING;
+    pausedAt = undefined;
   }
 
   function stop() {
-    if (sound) {
+    if (state === STATE_PLAYING) {
       sound.stop();
     }
+
+    state = STATE_STOPPED;
+    pausedAt = undefined;
   }
 
   function pause() {
-    // body...
+    if (state !== STATE_PLAYING) {
+      return;
+    }
+
+    sound.stop();
+    pausedAt = Date.now() - startedAt;
+    state = STATE_PAUSING;
   }
 
   return {
