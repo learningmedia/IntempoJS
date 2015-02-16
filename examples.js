@@ -25,8 +25,8 @@ loadArrayBuffer('audio/example.mp3')
     initializeUI();
   });
 
-function play() {
-  intempoPlayer.play();
+function start() {
+  intempoPlayer.start();
 }
 
 function stop() {
@@ -35,6 +35,12 @@ function stop() {
 
 function pause() {
   intempoPlayer.pause();
+}
+
+function changePosition(event) {
+  const element = event.target;
+  const elementX = event.pageX - element.offsetLeft;
+  intempoPlayer.position = elementX * 1000;
 }
 
 function onStateChange(newState) {
@@ -80,7 +86,7 @@ function loadArrayBuffer(url) {
 }
 
 function initializeUI() {
-  startButton.addEventListener('click', play);
+  startButton.addEventListener('click', start);
   startButton.removeAttribute('disabled');
 
   stopButton.addEventListener('click', stop);
@@ -89,8 +95,9 @@ function initializeUI() {
   pauseButton.addEventListener('click', pause);
   pauseButton.removeAttribute('disabled');
 
-  slider.min = 0;
   slider.max = intempoPlayer.duration;
   slider.value = 0;
+  slider.style.width = `${ Math.round(intempoPlayer.duration / 1000) }px`;
+  slider.addEventListener('click', changePosition);
   slider.removeAttribute('disabled');
 }

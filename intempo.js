@@ -10,8 +10,8 @@ function createPlayer(options, buffer) {
 
   let sound;
   let state;
-  let pausedAt;
-  let startedAt;
+  let pausePosition;
+  let startTime;
   let lastPosition;
   let duration;
   let intervalId;
@@ -20,13 +20,14 @@ function createPlayer(options, buffer) {
   lastPosition = 0;
   duration = buffer.duration * 1000;
 
-  function play() {
-    if (state === STATE_PLAYING) {
-      return;
-    }
-
+  function start(position = 0) {
     if (sound) {
       sound.onended = undefined;
+    }
+
+    if (state === STATE_PLAYING) {
+      window.clearInterval(intervalId);
+      sound.stop();
     }
 
     sound = options.audioContext.createBufferSource();
@@ -34,23 +35,19 @@ function createPlayer(options, buffer) {
     sound.onended = onCurrentSoundEnded;
     sound.connect(options.audioContext.destination);
 
-    if (pausedAt) {
-      startedAt = Date.now() - pausedAt;
-      sound.start(options.audioContext.currentTime, pausedAt / 1000);
-    } else {
-      startedAt = Date.now();
-      sound.start(options.audioContext.currentTime, 0);
-    }
+    position = position || pausePosition || 0;
+    startTime = Date.now() - position;
+    sound.start(options.audioContext.currentTime, position / 1000);
 
     changeState(STATE_PLAYING);
-    pausedAt = undefined;
+    pausePosition = undefined;
   }
 
   function stop() {
     if (state !== STATE_STOPPED) {
       sound.stop();
       changeState(STATE_STOPPED);
-      pausedAt = undefined;
+      pausePosition = undefined;
       onCurrentPositionChanged();
     }
   }
@@ -61,9 +58,19 @@ function createPlayer(options, buffer) {
     }
 
     sound.stop();
-    pausedAt = Date.now() - startedAt;
+    pausePosition = Date.now() - startTime;
     changeState(STATE_PAUSING);
     onCurrentPositionChanged();
+  }
+
+  function setPosition(value) {
+    if (state === STATE_PLAYING) {
+      start(value);
+    } else if (state === STATE_PAUSING) {
+      startTime = Date.now() - value;
+      pausePosition = value;
+      onCurrentPositionChanged();
+    }
   }
 
   function changeState(newState) {
@@ -79,9 +86,9 @@ function createPlayer(options, buffer) {
 
   function calculateCurrentPosition() {
     if (state === STATE_PAUSING) {
-      return pausedAt;
+      return pausePosition;
     } else if (state === STATE_PLAYING) {
-      return Date.now() - startedAt;
+      return Date.now() - startTime;
     } else {
       return 0;
     }
@@ -98,22 +105,25 @@ function createPlayer(options, buffer) {
   function onCurrentSoundEnded() {
     if (state !== STATE_STOPPED && calculateCurrentPosition() >= duration) {
       changeState(STATE_STOPPED);
-      pausedAt = undefined;
+      pausePosition = undefined;
     }
   }
 
   return {
-    play,
+    start,
     stop,
     pause,
     get duration() {
       return duration;
     },
+    get state() {
+      return state;
+    },
     get position() {
       return lastPosition;
     },
-    get state() {
-      return state;
+    set position(value) {
+      setPosition(value);
     }
   };
 }
