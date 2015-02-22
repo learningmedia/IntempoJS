@@ -7,7 +7,7 @@ let intempoPlayer;
 let startButton = document.getElementById('startButton');
 let stopButton = document.getElementById('stopButton');
 let pauseButton = document.getElementById('pauseButton');
-let slider = document.getElementById('slider');
+let progress = document.getElementById('progress');
 let positionLabel = document.getElementById('positionLabel');
 
 loadArrayBuffer('audio/example.mp3')
@@ -48,7 +48,7 @@ function onStateChange(newState) {
 }
 
 function onPositionChange(newPosition) {
-  slider.value = newPosition;
+  progress.value = newPosition;
   positionLabel.textContent = `${ newPosition / 1000 } / ${ intempoPlayer.duration / 1000 }`;
 }
 
@@ -95,9 +95,9 @@ function initializeUI() {
   pauseButton.addEventListener('click', pause);
   pauseButton.removeAttribute('disabled');
 
-  slider.max = intempoPlayer.duration;
-  slider.value = 0;
-  slider.style.width = `${ Math.round(intempoPlayer.duration / 1000) }px`;
-  slider.addEventListener('click', changePosition);
-  slider.removeAttribute('disabled');
+  progress.max = intempoPlayer.duration;
+  progress.value = 0;
+  progress.style.width = `${ Math.round(intempoPlayer.duration / 1000) }px`;
+  progress.addEventListener('click', changePosition);
+  progress.removeAttribute('disabled');
 }
