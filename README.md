@@ -54,5 +54,11 @@ player.position       // gets or sets the current position in milliseconds
 
 Start a webserver in the root directory and browse to `examples.html`.
 
+## Changelog
+
+__v1.0.1 (2015-02-22)__   Better bower ignores and logo in nice resolution
+
+__v1.0.0 (2015-02-22)__   Initial working solution
+
 ---
 Licensed under MIT.

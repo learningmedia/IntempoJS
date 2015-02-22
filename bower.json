@@ -1,6 +1,6 @@
 {
   "name": "IntempoJS",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ECMAScript 6 audio player module using the Web Audio API",
   "homepage": "https://github.com/learningmedia/IntempoJS",
   "authors": [
@@ -24,6 +24,7 @@
     "**/.*",
     "audio",
     "lib",
-    "logo"
+    "logo",
+    "examples.*"
   ]
 }
