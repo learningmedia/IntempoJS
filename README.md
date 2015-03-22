@@ -1,6 +1,6 @@
 ![IntempoJS](logo/IntempoJS-Logo.png)
 
-ECMAScript 6 audio player module using the Web Audio API.
+ECMAScript 2015 audio player module using the Web Audio API.
 
 ## Installation
 
@@ -8,6 +8,12 @@ Either just copy the file `intempo.js` into your project or use [bower](http://b
 
 ~~~shell
 $ bower install intempojs --save
+~~~
+
+Alternatively, you can use [jspm](http://jspm.io/):
+
+~~~shell
+$ jspm install github:learningmedia/intempojs --save
 ~~~
 
 ## Usage
@@ -55,6 +61,8 @@ player.position       // gets or sets the current position in milliseconds
 Start a webserver in the root directory and browse to `examples.html`.
 
 ## Changelog
+
+__v1.0.2 (2015-03-22)__   Add JSPM support
 
 __v1.0.1 (2015-02-22)__   Better bower ignores and logo in nice resolution
 
