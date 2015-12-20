@@ -1,8 +1,8 @@
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-const STATE_STOPPED = 0;
-const STATE_PLAYING = 1;
-const STATE_PAUSING = 2;
+export const STATE_STOPPED = 0;
+export const STATE_PLAYING = 1;
+export const STATE_PAUSING = 2;
 
 function noop() {}
 
@@ -128,7 +128,7 @@ function createPlayer(options, buffer) {
   };
 }
 
-function loadPlayer(options) {
+export function loadPlayer(options) {
   return new Promise((resolve, reject) => {
 
     if (!(options.arraybuffer instanceof ArrayBuffer)) {

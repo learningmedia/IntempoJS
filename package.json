@@ -1,7 +1,7 @@
 {
   "name": "intempo",
-  "description": "ECMAScript 2015 audio player module using the Web Audio API",
-  "version": "1.0.3",
+  "description": "Audio player module using the Web Audio API",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/learningmedia/IntempoJS.git"
@@ -9,6 +9,12 @@
   "author": "Andreas Helmberger / Ulrich Kaiser",
   "license": "MIT",
   "homepage": "https://github.com/learningmedia/IntempoJS",
+  "main": "dist/intempo.js",
+  "scripts": {
+    "clean": "rimraf dist && mkdir dist",
+    "build": "babel intempo.js --presets es2015 -s -o dist/intempo.js",
+    "prepublish": "npm run clean && npm run build"
+  },
   "jspm": {
     "main": "intempo",
     "directories": {
@@ -19,5 +25,10 @@
       "babel-runtime": "npm:babel-runtime@^5.8.20",
       "core-js": "npm:core-js@^1.1.0"
     }
+  },
+  "devDependencies": {
+    "babel-cli": "~6.3.17",
+    "babel-preset-es2015": "~6.3.13",
+    "rimraf": "~2.4.4"
   }
 }

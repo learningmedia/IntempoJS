@@ -1,19 +1,17 @@
 ![IntempoJS](logo/IntempoJS-Logo.png)
 
-ECMAScript 2015 audio player module using the Web Audio API.
+Audio player module using the Web Audio API.
 
 ## Installation
 
-Either just copy the file `intempo.js` into your project or use [bower](http://bower.io) to import it:
-
 ~~~shell
-$ bower install intempojs --save
+$ npm install intempo --save
 ~~~
 
 Alternatively, you can use [jspm](http://jspm.io/):
 
 ~~~shell
-$ jspm install github:learningmedia/intempojs --save
+$ jspm install npm:intempo
 ~~~
 
 ## Usage
@@ -61,6 +59,8 @@ player.position       // gets or sets the current position in milliseconds
 Start a webserver in the root directory and browse to `examples.html`.
 
 ## Changelog
+
+__v1.1.0 (2015-12-20)__   Compile and publish to NPM
 
 __v1.0.2 (2015-03-22)__   Add JSPM support
 
